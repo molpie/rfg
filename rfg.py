@@ -1,69 +1,76 @@
 import os
 import csv
 import random
+import pandas as pd
 
-def list_files_in_directory(directory, output_csv):
-    # Elenca tutti i file nella directory specificata
-    files = os.listdir(directory)
+def get_document_details(csv_file, document_name):
+    """
+    Ottiene i dettagli del documento (ufficio e tipocontribuzione) dal file CSV.
+    """
+    df = pd.read_csv(csv_file)
+    document_row = df[df['nomedocumento'] == document_name]
     
-    # Filtra solo i file (esclude le cartelle)
-    files = [f for f in files if os.path.isfile(os.path.join(directory, f))]
+    if document_row.empty:
+        raise ValueError(f"Documento {document_name} non trovato nel file CSV.")
     
-    # Ottieni le dimensioni dei file e scrivili in un CSV
-    with open(output_csv, mode='w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(['Filename', 'Size'])
-        
-        for filename in files:
-            filepath = os.path.join(directory, filename)
-            size = os.path.getsize(filepath)
-            writer.writerow([filename, size])
-            print(f"File: {filename}, Size: {size} bytes")
+    ufficio = document_row.iloc[0]['ufficio']
+    tipocontribuzione = document_row.iloc[0]['tipocontribuzione']
+    
+    return ufficio, tipocontribuzione
 
-def create_random_files_from_csv(csv_filename, dest_directory):
-    # Estrarre il nome base del file CSV senza l'estensione
-    base_dir = os.path.join(dest_directory, os.path.splitext(os.path.basename(csv_filename))[0])
-    
-    # Creare la directory di destinazione se non esiste
-    os.makedirs(base_dir, exist_ok=True)
-    
-    with open(csv_filename, mode='r') as file:
-        reader = csv.reader(file)
-        next(reader)  # Salta l'intestazione
-        for row in reader:
-            filename, size = row
-            size = int(size)  # Convertire la dimensione del file in intero
-            create_random_file(base_dir, filename, size)
+def create_random_files_from_csv(files_csv, details_csv, dest_directory):
+    """
+    Crea file casuali con dimensioni specificate in base alle informazioni fornite in un file CSV
+    e salva i file nelle sottodirectory 'ufficio' e 'tipocontribuzione'.
+    """
+    try:
+        with open(files_csv, mode='r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Salta l'intestazione
+            
+            for row in reader:
+                filename, size = row
+                size = int(size)
+                
+                # Ottieni ufficio e tipocontribuzione dal CSV dei dettagli
+                ufficio, tipocontribuzione = get_document_details(details_csv, filename)
+                
+                # Creare la struttura delle directory
+                base_dir = os.path.join(dest_directory, ufficio, tipocontribuzione)
+                os.makedirs(base_dir, exist_ok=True)
+                
+                # Crea il file casuale
+                create_random_file(base_dir, filename, size)
+    except Exception as e:
+        print(f"Errore durante la creazione dei file dalla CSV {files_csv}: {e}")
 
 def create_random_file(base_dir, filename, size):
-    # Genera contenuto casuale
+    """
+    Crea un file con contenuto casuale e dimensione specificata.
+    """
     content = os.urandom(size)
-    
-    # Anteponi "F" al nome del file
     new_filename = "F" + filename
-    
-    # Costruisce il percorso completo del file
     file_path = os.path.join(base_dir, new_filename)
     
-    with open(file_path, 'wb') as file:
-        file.write(content)
-    print(f"Creato file: {file_path}, Dimensione: {size} byte")
+    try:
+        with open(file_path, 'wb') as file:
+            file.write(content)
+        print(f"Creato file: {file_path}, Dimensione: {size} byte")
+    except Exception as e:
+        print(f"Errore durante la creazione del file {file_path}: {e}")
 
-# Funzione principale
-def process_directory(input_directory='.', output_directory=None):
-    # Usa la directory corrente se non viene specificata una directory di input
-    if not input_directory:
-        input_directory = os.getcwd()
-    
-    # Se non viene fornita una directory di output, utilizzare la stessa directory di input
+def process_directory(files_csv, details_csv, output_directory=None):
+    """
+    Processa un file CSV contenente i nomi e le dimensioni dei file e crea file casuali
+    in base alle dimensioni elencate, utilizzando i dettagli del CSV per determinare le sottodirectory.
+    """
     if not output_directory:
-        output_directory = input_directory
+        output_directory = os.getcwd()
     
-    output_csv = os.path.join(input_directory, f"{os.path.basename(input_directory)}_file_list.csv")
-    list_files_in_directory(input_directory, output_csv)
-    create_random_files_from_csv(output_csv, output_directory)
+    create_random_files_from_csv(files_csv, details_csv, output_directory)
 
 # Esempio di utilizzo
-input_directory = input("Inserisci il percorso della directory di input (lascia vuoto per usare la directory corrente): ").strip()
-output_directory = input("Inserisci il percorso della directory di destinazione (lascia vuoto per usare la stessa directory di input): ").strip()
-process_directory(input_directory, output_directory)
+files_csv = input("Inserisci il percorso del file CSV con l'elenco dei file e delle dimensioni: ").strip()
+details_csv = input("Inserisci il percorso del file CSV con i dettagli (ufficio e tipocontribuzione): ").strip()
+output_directory = input("Inserisci il percorso della directory di destinazione (lascia vuoto per usare la directory corrente): ").strip()
+process_directory(files_csv, details_csv, output_directory)
