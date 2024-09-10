@@ -3,7 +3,7 @@ import shutil
 import pandas as pd
 
 # Leggi il file CSV
-def crea_struttura_e_copia_documenti(csv_path, base_dir):
+def crea_struttura_e_copia_documenti(csv_path, root_dest_dir, base_dir):
     # Carica il CSV in un DataFrame pandas
     df = pd.read_csv(csv_path)
 
@@ -26,12 +26,12 @@ def crea_struttura_e_copia_documenti(csv_path, base_dir):
         
         # # Crea il percorso della directory di destinazione
         # if tipologiadocumento:
-        #     dest_dir = os.path.join(base_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione, tipologiadocumento)
+        #     dest_dir = os.path.join(root_dest_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione, tipologiadocumento)
         # else:
-        #     dest_dir = os.path.join(base_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione)
+        #     dest_dir = os.path.join(root_dest_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione)
         #
         # Versione semplificata
-        dest_dir = os.path.join(base_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione)
+        dest_dir = os.path.join(root_dest_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione)
 
         # Crea la directory se non esiste
         os.makedirs(dest_dir, exist_ok=True)
@@ -53,4 +53,4 @@ def crea_struttura_e_copia_documenti(csv_path, base_dir):
 csv_path = 'Estrazione_Solvency_100924.csv'
 base_dir = 'C:/SW/hashsum/downloads/'
 root_dest_dir = 'C:/Users/molinaro/OneDrive - Poste Italiane S.p.A/30_Projects/Appian/'
-crea_struttura_e_copia_documenti(csv_path, base_dir)
+crea_struttura_e_copia_documenti(csv_path, root_dest_dir, base_dir)
