@@ -15,15 +15,24 @@ def crea_struttura_e_sposta_documenti(csv_path, base_dir):
         tipocontribuzione = row['tipocontribuzione']
         nomedocumento = row['nomedocumento']
         
-        # La colonna 'tipologiadocumento' potrebbe non essere sempre presente
-        tipologiadocumento = row.get('tipologiadocumento', None)
+        # # La colonna 'tipologiadocumento' potrebbe non essere presente o avere un valore NaN
+        # tipologiadocumento = row.get('tipologiadocumento', None)
         
-        # Crea il percorso della directory di destinazione
-        if tipologiadocumento:
-            dest_dir = os.path.join(base_dir, dataquarter, ufficio, tipocontribuzione, tipologiadocumento)
-        else:
-            dest_dir = os.path.join(base_dir, dataquarter, ufficio, tipocontribuzione)
+        # # Controlla se tipologiadocumento è una stringa, altrimenti imposta a None
+        # if isinstance(tipologiadocumento, str):
+        #     tipologiadocumento = tipologiadocumento.strip()
+        # else:
+        #     tipologiadocumento = None
         
+        # # Crea il percorso della directory di destinazione
+        # if tipologiadocumento:
+        #     dest_dir = os.path.join(base_dir, "new", dataquarter, ufficio, tipocontribuzione, tipologiadocumento)
+        # else:
+        #     dest_dir = os.path.join(base_dir, "new", dataquarter, ufficio, tipocontribuzione)
+        #
+        # Versione semplificata
+        dest_dir = os.path.join(base_dir, "new", dataquarter, ufficio, tipocontribuzione)
+
         # Crea la directory se non esiste
         os.makedirs(dest_dir, exist_ok=True)
         
@@ -35,12 +44,12 @@ def crea_struttura_e_sposta_documenti(csv_path, base_dir):
         
         # Sposta il file nella directory di destinazione
         if os.path.exists(src_file):
-            shutil.move(src_file, dest_file)
-            print(f'Spostato {nomedocumento} in {dest_dir}')
+            shutil.copy(src_file, dest_file)
+            print(f'Copiato {nomedocumento} in {dest_dir}')
         else:
             print(f'File {src_file} non trovato')
 
 # Esegui la funzione con il path del CSV e la directory base
 csv_path = 'ALL.csv'
-base_dir = '/C:/Users/molin195/Downloads/Test_BPM/1.SVIL/'
+base_dir = 'C:/SW/hashsum/downloads/Test/'
 crea_struttura_e_sposta_documenti(csv_path, base_dir)
