@@ -3,7 +3,7 @@ import shutil
 import pandas as pd
 
 # Leggi il file CSV
-def crea_struttura_e_sposta_documenti(csv_path, base_dir):
+def crea_struttura_e_copia_documenti(csv_path, base_dir):
     # Carica il CSV in un DataFrame pandas
     df = pd.read_csv(csv_path)
 
@@ -26,12 +26,12 @@ def crea_struttura_e_sposta_documenti(csv_path, base_dir):
         
         # # Crea il percorso della directory di destinazione
         # if tipologiadocumento:
-        #     dest_dir = os.path.join(base_dir, "new", dataquarter, ufficio, tipocontribuzione, tipologiadocumento)
+        #     dest_dir = os.path.join(base_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione, tipologiadocumento)
         # else:
-        #     dest_dir = os.path.join(base_dir, "new", dataquarter, ufficio, tipocontribuzione)
+        #     dest_dir = os.path.join(base_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione)
         #
         # Versione semplificata
-        dest_dir = os.path.join(base_dir, "new", dataquarter, ufficio, tipocontribuzione)
+        dest_dir = os.path.join(base_dir, "= SolvencyII Files =", dataquarter, ufficio, tipocontribuzione)
 
         # Crea la directory se non esiste
         os.makedirs(dest_dir, exist_ok=True)
@@ -42,7 +42,7 @@ def crea_struttura_e_sposta_documenti(csv_path, base_dir):
         # Percorso di destinazione del file
         dest_file = os.path.join(dest_dir, nomedocumento)
         
-        # Sposta il file nella directory di destinazione
+        # Copia il file nella directory di destinazione
         if os.path.exists(src_file):
             shutil.copy(src_file, dest_file)
             print(f'Copiato {nomedocumento} in {dest_dir}')
@@ -50,6 +50,7 @@ def crea_struttura_e_sposta_documenti(csv_path, base_dir):
             print(f'File {src_file} non trovato')
 
 # Esegui la funzione con il path del CSV e la directory base
-csv_path = 'ALL.csv'
-base_dir = 'C:/SW/hashsum/downloads/Test/'
-crea_struttura_e_sposta_documenti(csv_path, base_dir)
+csv_path = 'Estrazione_Solvency_100924.csv'
+base_dir = 'C:/SW/hashsum/downloads/'
+root_dest_dir = 'C:/Users/molinaro/OneDrive - Poste Italiane S.p.A/30_Projects/Appian/'
+crea_struttura_e_copia_documenti(csv_path, base_dir)
